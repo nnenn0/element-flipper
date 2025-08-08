@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        width: 220px;
+        padding: 15px;
+        font-family: Arial, sans-serif;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background: #4285f4;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      button:hover {
+        background: #3367d6;
+      }
+      h3 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
+      }
+      .note {
+        font-size: 12px;
+        color: #666;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Element Flipper</h3>
+    <button id="flipButton">要素を反転（有効化）</button>
+    <div class="note">
+      クリックでモードON。要素をクリックすると反転します。Escで解除。
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
