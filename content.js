@@ -7,28 +7,49 @@ if (window.elementFlipperLoaded) {
 
   let isActive = false;
   let highlightedEl = null;
+  let highlightOverlay = null;
   const originalTransforms = new WeakMap();
 
+  function updateHighlightOverlay() {
+    if (!highlightedEl || !highlightOverlay) return;
+    const rect = highlightedEl.getBoundingClientRect();
+    highlightOverlay.style.setProperty("left", `${rect.left}px`, "important");
+    highlightOverlay.style.setProperty("top", `${rect.top}px`, "important");
+    highlightOverlay.style.setProperty("width", `${rect.width}px`, "important");
+    highlightOverlay.style.setProperty("height", `${rect.height}px`, "important");
+  }
+
+  function clearHighlight() {
+    highlightedEl = null;
+    if (highlightOverlay) {
+      highlightOverlay.remove();
+      highlightOverlay = null;
+    }
+  }
+
   function setHighlight(el) {
-    if (highlightedEl && highlightedEl !== el) {
-      try {
-        highlightedEl.style.outline = "";
-      } catch (e) {}
-      highlightedEl = null;
+    if (!el) {
+      clearHighlight();
+      return;
     }
-    if (el && el !== highlightedEl) {
-      highlightedEl = el;
-      try {
-        highlightedEl.style.outline = "3px solid red";
-      } catch (e) {}
+
+    highlightedEl = el;
+    if (!highlightOverlay) {
+      highlightOverlay = document.createElement("div");
+      highlightOverlay.setAttribute("aria-hidden", "true");
+      highlightOverlay.style.cssText =
+        "all: initial !important; display: block !important; position: fixed !important; " +
+        "pointer-events: none !important; box-sizing: border-box !important; " +
+        "outline: 3px solid red !important; z-index: 2147483647 !important;";
+      document.documentElement.appendChild(highlightOverlay);
     }
+    updateHighlightOverlay();
   }
 
   // pointermove を使ってマウス下の要素を拾う（安定）
   function onPointerMove(e) {
     if (!isActive) return;
     const el = document.elementFromPoint(e.clientX, e.clientY);
-    if (!el) return;
     setHighlight(el);
   }
 
@@ -81,8 +102,10 @@ if (window.elementFlipperLoaded) {
     if (isActive) return;
     isActive = true;
     document.addEventListener("pointermove", onPointerMove, true);
+    document.addEventListener("scroll", updateHighlightOverlay, true);
     document.addEventListener("click", onClick, true);
     window.addEventListener("keydown", onKeyDown, true);
+    window.addEventListener("resize", updateHighlightOverlay);
     console.log("Element Flipper activated");
   }
 
@@ -90,15 +113,11 @@ if (window.elementFlipperLoaded) {
     if (!isActive) return;
     isActive = false;
     document.removeEventListener("pointermove", onPointerMove, true);
+    document.removeEventListener("scroll", updateHighlightOverlay, true);
     document.removeEventListener("click", onClick, true);
     window.removeEventListener("keydown", onKeyDown, true);
-    // ハイライトを消す
-    if (highlightedEl) {
-      try {
-        highlightedEl.style.outline = "";
-      } catch (e) {}
-      highlightedEl = null;
-    }
+    window.removeEventListener("resize", updateHighlightOverlay);
+    clearHighlight();
     console.log("Element Flipper deactivated");
   }
 
