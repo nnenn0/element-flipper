@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <style>
@@ -21,6 +21,10 @@
       button:hover {
         background: #3367d6;
       }
+      button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
       h3 {
         margin: 0 0 10px 0;
         font-size: 16px;
@@ -30,6 +34,12 @@
         color: #666;
         margin-top: 8px;
       }
+      .status {
+        font-size: 12px;
+        color: #b3261e;
+        line-height: 1.4;
+        margin: 10px 0 0;
+      }
     </style>
   </head>
   <body>
@@ -38,6 +48,7 @@
     <div class="note">
       クリックでモードON。要素をクリックすると反転します。Escで解除。
     </div>
+    <p id="status" class="status" role="alert" hidden></p>
     <script src="popup.js"></script>
   </body>
 </html>
