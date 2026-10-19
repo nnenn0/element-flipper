@@ -7,6 +7,7 @@ if (window.elementFlipperLoaded) {
 
   let isActive = false;
   let highlightedEl = null;
+  const originalTransforms = new WeakMap();
 
   function setHighlight(el) {
     if (highlightedEl && highlightedEl !== el) {
@@ -41,16 +42,27 @@ if (window.elementFlipperLoaded) {
     const el = e.target;
     if (!el) return;
 
-    // 保存されている元の inline transform を参照する方式
-    const flippedFlag = "elementFlipperFlipped";
+    if (!originalTransforms.has(el)) {
+      const originalValue = el.style.getPropertyValue("transform");
+      const originalPriority = el.style.getPropertyPriority("transform");
+      const computedTransform = getComputedStyle(el).transform;
 
-    if (!el.dataset[flippedFlag]) {
-      el.style.transform = "scaleX(-1)";
-      el.dataset[flippedFlag] = "true";
+      originalTransforms.set(el, { value: originalValue, priority: originalPriority });
+      // 既存の CSS による変形も維持し、その上で要素を左右反転する。
+      const flippedTransform =
+        computedTransform === "none"
+          ? "scaleX(-1)"
+          : `${computedTransform} scaleX(-1)`;
+      el.style.setProperty("transform", flippedTransform, "important");
       console.log("Flipped:", el);
     } else {
-      el.style.transform = "none";
-      delete el.dataset[flippedFlag];
+      const { value, priority } = originalTransforms.get(el);
+      if (value) {
+        el.style.setProperty("transform", value, priority);
+      } else {
+        el.style.removeProperty("transform");
+      }
+      originalTransforms.delete(el);
       console.log("Unflipped:", el);
     }
 
