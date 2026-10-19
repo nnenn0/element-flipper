@@ -17,5 +17,5 @@ Element Flipper は、任意の Web ページ上の要素をワンクリック�
 
 ## 権限
 
-- `activeTab`, `scripting`: アクティブなタブへのスクリプト実行
-- `host_permissions`: すべての URL で動作
+- `activeTab`: 拡張機能を開いたときに、現在のタブへの一時的なアクセスを許可
+- `scripting`: 選択モードのスクリプトを現在のタブで実行
